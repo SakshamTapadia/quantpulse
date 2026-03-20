@@ -1,5 +1,5 @@
 """
-GaussianHMM regime model — 4 hidden states corresponding to:
+GaussianHMM regime model - 4 hidden states corresponding to:
   0: Trending       (high momentum, moderate vol, directional)
   1: Mean-reverting (low vol, oscillating, RSI extremes revert)
   2: Choppy         (low momentum, low trend_r, random-walk-like)
@@ -21,7 +21,7 @@ from quantpulse_regime.config import settings
 
 logger = structlog.get_logger(__name__)
 
-# Feature columns the HMM uses (subset — HMM works better with fewer, less correlated features)
+# Feature columns the HMM uses (subset - HMM works better with fewer, less correlated features)
 HMM_FEATURES = [
     "rv_21d_zscore",
     "rv_ratio",
@@ -116,7 +116,7 @@ class HMMRegimeModel:
         trending = max(remaining, key=lambda s: scores[s]["trend_score"])
         assigned[trending] = 0
         remaining = [s for s in remaining if s != trending]
-        # Highest momentum among remaining → mean_reverting (1) — slight misnomer but captures oscillatory
+        # Highest momentum among remaining → mean_reverting (1) - slight misnomer but captures oscillatory
         mean_rev = max(remaining, key=lambda s: abs(scores[s]["momentum_score"]))
         assigned[mean_rev] = 1
         # Remainder → choppy (2)
