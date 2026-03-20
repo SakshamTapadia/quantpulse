@@ -7,5 +7,5 @@ if __name__ == "__main__":
         host=settings.service_host,
         port=settings.service_port,
         log_config=None,   # we use structlog
-        workers=1,         # single worker — scheduler state must not fork
+        workers=1,         # single worker - scheduler state must not fork
     )
