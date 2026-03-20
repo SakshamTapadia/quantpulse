@@ -1,12 +1,12 @@
 """
-EnsemblePredictor — combines HMM and Transformer predictions via weighted soft voting.
+EnsemblePredictor - combines HMM and Transformer predictions via weighted soft voting.
 
 Output per sample:
-  regime:        int (0-3) — argmax of blended probability vector
-  confidence:    float (0-1) — max probability of winning class
-  hmm_prob:      list[float] — HMM posterior over 4 states
-  transformer_prob: list[float] — Transformer softmax over 4 classes
-  ensemble_prob: list[float] — blended probability vector
+  regime:        int (0-3) - argmax of blended probability vector
+  confidence:    float (0-1) - max probability of winning class
+  hmm_prob:      list[float] - HMM posterior over 4 states
+  transformer_prob: list[float] - Transformer softmax over 4 classes
+  ensemble_prob: list[float] - blended probability vector
 """
 from dataclasses import dataclass
 
@@ -84,7 +84,7 @@ class EnsemblePredictor:
         X_hmm: np.ndarray,
         X_tfm: np.ndarray,
     ) -> list[RegimePrediction]:
-        """Batch prediction — returns one RegimePrediction per sample."""
+        """Batch prediction - returns one RegimePrediction per sample."""
         _, hmm_probs = self.hmm.predict(X_hmm)
         tfm_probs = self.transformer.predict_proba(X_tfm)
 
