@@ -1,5 +1,5 @@
 """
-Macro indicators — joins FRED macro series onto the per-ticker feature frame.
+Macro indicators - joins FRED macro series onto the per-ticker feature frame.
 
 Sources (all from TimescaleDB macro table, originally from FRED):
   VIXCLS        → vix (spot level)
