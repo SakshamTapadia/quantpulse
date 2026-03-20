@@ -1,7 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 export const WS_URL  = process.env.NEXT_PUBLIC_WS_URL  ?? 'ws://localhost:8000'
 
-// Inside Docker, server-side Next.js can't reach localhost:8000 — use internal DNS.
+// Inside Docker, server-side Next.js can't reach localhost:8000 - use internal DNS.
 // INTERNAL_API_URL is set as a runtime env var on the frontend container.
 function baseUrl(): string {
   if (typeof window === 'undefined') {
