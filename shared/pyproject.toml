@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quantpulse-shared"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "pydantic>=2.7",
+  "pydantic-settings>=2.2",
+  "asyncpg>=0.29",
+  "redis>=5.0",
+  "aiokafka>=0.10",
+  "structlog>=24.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quantpulse_shared"]
