@@ -1,0 +1,318 @@
+x-common-env: &common-env
+  ENV: ${ENV:-development}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  # Hardcode Docker-internal hostnames so .env localhost values don't break containers
+  POSTGRES_HOST: timescaledb
+  POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+  POSTGRES_DB: ${POSTGRES_DB:-quantpulse}
+  POSTGRES_USER: ${POSTGRES_USER:-quantpulse}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-1234}
+  REDIS_HOST: redis
+  REDIS_PORT: ${REDIS_PORT:-6379}
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-changeme}
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  MLFLOW_TRACKING_URI: http://mlflow:5000
+  FEATURE_STORE_PATH: ${FEATURE_STORE_PATH:-/data/features}
+  CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+
+x-service-base: &service-base
+  restart: unless-stopped
+  networks:
+    - quantpulse-net
+  depends_on:
+    timescaledb:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    kafka:
+      condition: service_healthy
+
+networks:
+  quantpulse-net:
+    driver: bridge
+
+volumes:
+  timescaledb-data:
+  redis-data:
+  mlflow-data:
+  feature-store:
+  kafka-data:
+  model-artifacts:
+
+# ── Infrastructure ───────────────────────────────────────────────────────────
+services:
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: qp-timescaledb
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-quantpulse}
+      POSTGRES_USER: ${POSTGRES_USER:-quantpulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quantpulse -d quantpulse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: qp-redis
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    command: redis-server --requirepass ${REDIS_PASSWORD:-changeme} --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: qp-zookeeper
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: qp-kafka
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: 168
+    ports:
+      - "29092:29092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  mlflow:
+    build:
+      context: ./infra/mlflow
+      dockerfile: Dockerfile
+    container_name: qp-mlflow
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    command: >
+      server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri postgresql://${POSTGRES_USER:-quantpulse}:${POSTGRES_PASSWORD:-1234}@timescaledb:5432/mlflow
+      --default-artifact-root /mlflow/artifacts
+      --serve-artifacts
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-data:/mlflow/artifacts
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+
+  # ── Application Services ────────────────────────────────────────────────────
+
+  ingestion:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: services/ingestion/Dockerfile
+    container_name: qp-ingestion
+    environment:
+      <<: *common-env
+      POLYGON_API_KEY: ${POLYGON_API_KEY}
+      FRED_API_KEY: ${FRED_API_KEY}
+      KAFKA_TOPIC_RAW_OHLCV: ${KAFKA_TOPIC_RAW_OHLCV:-raw-ohlcv}
+      KAFKA_TOPIC_MACRO: ${KAFKA_TOPIC_MACRO:-raw-macro}
+      KAFKA_TOPIC_OPTIONS: ${KAFKA_TOPIC_OPTIONS:-raw-options}
+    volumes:
+      - feature-store:/data/features
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8001/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  feature:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: services/feature/Dockerfile
+    container_name: qp-feature
+    environment:
+      <<: *common-env
+      KAFKA_TOPIC_RAW_OHLCV: ${KAFKA_TOPIC_RAW_OHLCV:-raw-ohlcv}
+      KAFKA_TOPIC_MACRO: ${KAFKA_TOPIC_MACRO:-raw-macro}
+      KAFKA_TOPIC_OPTIONS: ${KAFKA_TOPIC_OPTIONS:-raw-options}
+      KAFKA_TOPIC_FEATURES: ${KAFKA_TOPIC_FEATURES:-features-computed}
+    volumes:
+      - feature-store:/data/features
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8002/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  regime:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: services/regime/Dockerfile
+    container_name: qp-regime
+    environment:
+      <<: *common-env
+      KAFKA_TOPIC_FEATURES: ${KAFKA_TOPIC_FEATURES:-features-computed}
+      KAFKA_TOPIC_REGIME: ${KAFKA_TOPIC_REGIME:-regime-signal}
+      MLFLOW_EXPERIMENT_NAME: ${MLFLOW_EXPERIMENT_NAME:-quantpulse-regime}
+    volumes:
+      - feature-store:/data/features
+      - model-artifacts:/app/models
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8003/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  alert:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: services/alert/Dockerfile
+    container_name: qp-alert
+    environment:
+      <<: *common-env
+      KAFKA_TOPIC_REGIME: ${KAFKA_TOPIC_REGIME:-regime-signal}
+      KAFKA_TOPIC_FEATURES: ${KAFKA_TOPIC_FEATURES:-features-computed}
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8004/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  api:
+    <<: *service-base
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    container_name: qp-api
+    environment:
+      <<: *common-env
+      JWT_SECRET: ${JWT_SECRET:-changeme}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-1440}
+      KAFKA_TOPIC_REGIME: ${KAFKA_TOPIC_REGIME:-regime-signal}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://localhost:8000}
+    container_name: qp-frontend
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    environment:
+      INTERNAL_API_URL: http://api:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  # ── Observability ──────────────────────────────────────────────────────────
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: qp-prometheus
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: qp-grafana
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: changeme
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./infra/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./infra/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+    depends_on:
+      - prometheus
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: qp-kafka-ui
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    environment:
+      KAFKA_CLUSTERS_0_NAME: quantpulse
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    ports:
+      - "9080:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
