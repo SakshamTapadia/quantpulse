@@ -16,7 +16,8 @@ class APIClient:
             return {"Authorization": f"Bearer {self.token}"}
         return {}
 
-    def login(self, username: str, password: str) -> Optional[str]:
+    def login(self, username: str, password: str) -> tuple[Optional[str], Optional[str]]:
+        """Returns (token, error_message). One of the two will be None."""
         try:
             r = requests.post(
                 f"{self.base}/auth/token",
@@ -24,9 +25,13 @@ class APIClient:
                 timeout=10,
             )
             r.raise_for_status()
-            return r.json()["access_token"]
-        except Exception:
-            return None
+            return r.json()["access_token"], None
+        except requests.exceptions.ConnectionError:
+            return None, f"Cannot connect to API at {self.base}. Is the backend running?"
+        except requests.exceptions.Timeout:
+            return None, f"Request timed out connecting to {self.base}."
+        except Exception as e:
+            return None, str(e)
 
     def get_tickers(self) -> list:
         r = requests.get(

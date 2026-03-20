@@ -38,9 +38,9 @@ def _show_login() -> None:
         submitted = st.form_submit_button("Sign in", use_container_width=True)
     if submitted:
         client = APIClient()
-        token = client.login(username, password)
+        token, err = client.login(username, password)
         if token:
             st.session_state.token = token
             st.rerun()
         else:
-            st.error("Invalid credentials.")
+            st.error(err or "Login failed.")
