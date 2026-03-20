@@ -1,5 +1,5 @@
 """
-Momentum indicators — pure Polars expressions.
+Momentum indicators - pure Polars expressions.
 
 RSI (Relative Strength Index, Wilder smoothing):
   RSI = 100 - 100 / (1 + avg_gain / avg_loss)
@@ -11,7 +11,7 @@ TSI (True Strength Index):
             / EWM(EWM(|price_change|, slow), fast)
   Oscillates around zero; positive = bullish momentum.
 
-Price Momentum (ROC — Rate of Change):
+Price Momentum (ROC - Rate of Change):
   mom_N = (close / close.shift(N)) - 1
   Windows: 5, 21, 63 days.
 
@@ -109,7 +109,7 @@ def add_trend_strength(df: pl.DataFrame, window: int = 21) -> pl.DataFrame:
     """
     # Polars doesn't have rolling_corr natively, so we compute manually
     # using rolling cov / (rolling std_x * rolling std_y).
-    # The time index increments by 1 each bar — its rolling std is constant
+    # The time index increments by 1 each bar - its rolling std is constant
     # for a fixed window, so we can use a simplified form.
     df = df.with_columns(
         pl.int_range(pl.len()).over("ticker").cast(pl.Float64).alias("_t_idx")
