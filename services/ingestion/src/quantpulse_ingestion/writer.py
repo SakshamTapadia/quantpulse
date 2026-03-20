@@ -1,5 +1,5 @@
 """
-DBWriter — writes validated records to TimescaleDB via asyncpg.
+DBWriter - writes validated records to TimescaleDB via asyncpg.
 Uses UPSERT (INSERT ... ON CONFLICT DO UPDATE) to safely re-run ingestion.
 """
 from typing import Any
