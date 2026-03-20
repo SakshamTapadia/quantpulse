@@ -1,5 +1,5 @@
 """
-API Gateway — single entry point for the Next.js frontend.
+API Gateway - single entry point for the Next.js frontend.
 
 REST endpoints:
   GET  /api/v1/regime/{ticker}       Latest regime for a ticker
@@ -158,7 +158,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
 
 @app.post("/auth/token", response_model=Token)
 async def login(form: OAuth2PasswordRequestForm = Depends()) -> Token:
-    # Demo auth — any non-empty credentials work
+    # Demo auth - any non-empty credentials work
     if not form.username or not form.password:
         raise HTTPException(status_code=400, detail="Username and password required")
     return Token(access_token=_create_token(form.username), token_type="bearer")
