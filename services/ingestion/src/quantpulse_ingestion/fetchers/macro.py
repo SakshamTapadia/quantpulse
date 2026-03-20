@@ -1,5 +1,5 @@
 """
-MacroFetcher — pulls macroeconomic time series from the St. Louis FRED API.
+MacroFetcher - pulls macroeconomic time series from the St. Louis FRED API.
 All series listed in settings.fred_series are fetched and published to
 the macro-data Kafka topic.
 
@@ -88,7 +88,7 @@ class MacroFetcher(BaseFetcher):
     ) -> list[MacroRecord]:
         """
         Parse FRED observations JSON into MacroRecord list.
-        FRED returns '.' for missing values — we drop those.
+        FRED returns '.' for missing values - we drop those.
         """
         rows = []
         for obs in observations:
