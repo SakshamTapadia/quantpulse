@@ -1,5 +1,5 @@
 """
-FeaturePipeline — orchestrates the full indicator computation chain.
+FeaturePipeline - orchestrates the full indicator computation chain.
 
 Execution order:
   1.  log_returns
@@ -46,7 +46,7 @@ logger = structlog.get_logger(__name__)
 
 
 class FeaturePipeline:
-    """Stateless pipeline — call .run() with raw DataFrames, get feature matrix."""
+    """Stateless pipeline - call .run() with raw DataFrames, get feature matrix."""
 
     def run(
         self,
