@@ -1,4 +1,4 @@
-"""Regime service — FastAPI app with Kafka consumer and inference endpoints."""
+"""Regime service - FastAPI app with Kafka consumer and inference endpoints."""
 import asyncio
 import json
 from contextlib import asynccontextmanager
