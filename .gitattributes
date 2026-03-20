@@ -1,7 +1,7 @@
 # Normalize line endings to LF on commit
 * text=auto eol=lf
 
-# Binary files — never touch
+# Binary files - never touch
 *.pt binary
 *.joblib binary
 *.parquet binary
