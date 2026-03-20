@@ -1,0 +1,174 @@
+{
+  "title": "QuantPulse — System Overview",
+  "uid": "quantpulse-overview",
+  "schemaVersion": 38,
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Records ingested / min",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 7 },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "min": 0 },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "rate(ingestion_records_total{data_type=\"ohlcv\"}[1m]) * 60",
+          "legendFormat": "OHLCV rows/min"
+        },
+        {
+          "expr": "rate(ingestion_records_total{data_type=\"macro\"}[1m]) * 60",
+          "legendFormat": "Macro rows/min"
+        },
+        {
+          "expr": "rate(ingestion_records_total{data_type=\"options\"}[1m]) * 60",
+          "legendFormat": "Options rows/min"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Regime inferences / min",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 7 },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "min": 0 },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "rate(regime_inferences_total[1m]) * 60",
+          "legendFormat": "{{ticker}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Total Records Ingested",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 7, "w": 6, "h": 4 },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": 0 }] } } },
+      "targets": [{ "expr": "sum(ingestion_records_total)", "legendFormat": "Total records" }]
+    },
+    {
+      "id": 4,
+      "title": "Alerts Generated",
+      "type": "stat",
+      "gridPos": { "x": 6, "y": 7, "w": 6, "h": 4 },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "yellow", "value": 0 }, { "color": "red", "value": 10 }] } } },
+      "targets": [{ "expr": "sum(alert_generated_total)", "legendFormat": "Alerts" }]
+    },
+    {
+      "id": 5,
+      "title": "Kafka Messages Published",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 7, "w": 6, "h": 4 },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": 0 }] } } },
+      "targets": [{ "expr": "sum(ingestion_kafka_published_total{status=\"success\"})", "legendFormat": "Published" }]
+    },
+    {
+      "id": 6,
+      "title": "Fetch Errors",
+      "type": "stat",
+      "gridPos": { "x": 18, "y": 7, "w": 6, "h": 4 },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 1 }] } } },
+      "targets": [{ "expr": "sum(ingestion_fetch_total{status=\"error\"}) or vector(0)", "legendFormat": "Errors" }]
+    },
+    {
+      "id": 7,
+      "title": "Fetch Duration p95 by Source (seconds)",
+      "type": "bargauge",
+      "gridPos": { "x": 0, "y": 11, "w": 12, "h": 6 },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "min": 0, "color": { "mode": "palette-classic" } },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, source) (rate(ingestion_fetch_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{source}}"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Feature Pipeline Runs",
+      "type": "piechart",
+      "gridPos": { "x": 12, "y": 11, "w": 6, "h": 6 },
+      "options": { "pieType": "donut", "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        { "expr": "sum by (status) (feature_pipeline_runs_total)", "legendFormat": "{{status}}" }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Feature Pipeline Duration p95 (seconds)",
+      "type": "stat",
+      "gridPos": { "x": 18, "y": 11, "w": 6, "h": 6 },
+      "fieldConfig": { "defaults": { "unit": "s", "decimals": 2, "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": 0 }, { "color": "yellow", "value": 5 }, { "color": "red", "value": 30 }] } } },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(feature_pipeline_duration_seconds_bucket[5m])))",
+          "legendFormat": "p95 latency"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Kafka Published by Topic",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 17, "w": 12, "h": 6 },
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0 }, "overrides": [] },
+      "targets": [
+        {
+          "expr": "rate(ingestion_kafka_published_total{status=\"success\"}[1m]) * 60",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "DB Writes by Table",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 17, "w": 12, "h": 6 },
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0 }, "overrides": [] },
+      "targets": [
+        {
+          "expr": "rate(ingestion_db_writes_total{status=\"success\"}[1m]) * 60",
+          "legendFormat": "{{table}}"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Feature Messages Consumed from Kafka",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 23, "w": 12, "h": 6 },
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0 }, "overrides": [] },
+      "targets": [
+        {
+          "expr": "rate(feature_messages_consumed_total[1m]) * 60",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Service Memory Usage (MB)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 23, "w": 12, "h": 6 },
+      "fieldConfig": { "defaults": { "unit": "decmbytes", "min": 0 }, "overrides": [] },
+      "targets": [
+        { "expr": "process_resident_memory_bytes{job=\"quantpulse-ingestion\"} / 1024 / 1024", "legendFormat": "ingestion" },
+        { "expr": "process_resident_memory_bytes{job=\"quantpulse-feature\"} / 1024 / 1024", "legendFormat": "feature" },
+        { "expr": "process_resident_memory_bytes{job=\"quantpulse-regime\"} / 1024 / 1024", "legendFormat": "regime" },
+        { "expr": "process_resident_memory_bytes{job=\"quantpulse-alert\"} / 1024 / 1024", "legendFormat": "alert" },
+        { "expr": "process_resident_memory_bytes{job=\"quantpulse-api\"} / 1024 / 1024", "legendFormat": "api" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'quantpulse-ingestion'
+    static_configs:
+      - targets: ['ingestion:8001']
+
+  - job_name: 'quantpulse-feature'
+    static_configs:
+      - targets: ['feature:8002']
+
+  - job_name: 'quantpulse-regime'
+    static_configs:
+      - targets: ['regime:8003']
+
+  - job_name: 'quantpulse-alert'
+    static_configs:
+      - targets: ['alert:8004']
+
+  - job_name: 'quantpulse-api'
+    static_configs:
+      - targets: ['api:8000']
+
+  - job_name: 'timescaledb'
+    static_configs:
+      - targets: ['timescaledb:9187']
