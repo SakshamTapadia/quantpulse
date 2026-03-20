@@ -1,5 +1,5 @@
 """
-Base fetcher — all data fetchers inherit from this.
+Base fetcher - all data fetchers inherit from this.
 Provides: structured logging, Prometheus metrics, tenacity retry.
 """
 import asyncio
