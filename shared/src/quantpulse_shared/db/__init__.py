@@ -1,4 +1,4 @@
-"""Shared DB helpers — DSN builder and health check."""
+"""Shared DB helpers - DSN builder and health check."""
 import asyncpg
 
 async def check_db(dsn: str) -> bool:
