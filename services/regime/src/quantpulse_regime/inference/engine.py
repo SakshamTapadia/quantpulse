@@ -1,5 +1,5 @@
 """
-InferenceEngine — loads trained models and runs real-time regime inference.
+InferenceEngine - loads trained models and runs real-time regime inference.
 
 Flow:
   1. On startup: load HMM + Transformer from artifact store
@@ -58,7 +58,7 @@ class InferenceEngine:
             return False
 
         hmm = HMMRegimeModel().load(str(hmm_path))
-        # Need to know n_features to init transformer — read from saved file
+        # Need to know n_features to init transformer - read from saved file
         import torch
         tfm_data = torch.load(str(tfm_path), map_location="cpu")
         n_features = tfm_data.get("n_features", len(TFM_FEATURES))
