@@ -1,12 +1,12 @@
 """
-Alert service — consumes regime-signals and features, evaluates rules,
+Alert service - consumes regime-signals and features, evaluates rules,
 persists alerts to TimescaleDB, and pushes to the API gateway via Kafka.
 
 Alert types:
-  REGIME_SHIFT   — regime changed for a ticker (e.g. trending → high_vol)
-  VOL_SPIKE      — rv_ratio > threshold or VIX z-score > threshold
-  GEX_FLIP       — GEX proxy crossed zero (dealer positioning flip)
-  CONFIDENCE_LOW — ensemble confidence < 0.5 (uncertain regime)
+  REGIME_SHIFT   - regime changed for a ticker (e.g. trending → high_vol)
+  VOL_SPIKE      - rv_ratio > threshold or VIX z-score > threshold
+  GEX_FLIP       - GEX proxy crossed zero (dealer positioning flip)
+  CONFIDENCE_LOW - ensemble confidence < 0.5 (uncertain regime)
 
 Severity:
   1 = info     (regime shift within low-vol regimes)
