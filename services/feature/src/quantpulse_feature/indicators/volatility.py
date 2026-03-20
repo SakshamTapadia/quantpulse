@@ -1,5 +1,5 @@
 """
-Volatility indicators — all implemented as pure Polars expressions.
+Volatility indicators - all implemented as pure Polars expressions.
 
 Realized Volatility (RV):
   RV_n = sqrt(252) * std(log_returns, window=n)
@@ -10,7 +10,7 @@ ATR (Average True Range):
   ATR = EWM(TR, span=period)
 
 Vol Ratio:
-  rv_5d / rv_63d — short-term vs long-term vol compression signal.
+  rv_5d / rv_63d - short-term vs long-term vol compression signal.
   > 1  →  vol expanding (trending / crisis)
   < 1  →  vol compressed (mean-reverting / low-vol regime)
 
