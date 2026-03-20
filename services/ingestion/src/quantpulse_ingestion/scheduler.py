@@ -1,5 +1,5 @@
 """
-IngestionScheduler — wires APScheduler cron jobs for each data source.
+IngestionScheduler - wires APScheduler cron jobs for each data source.
 
 Jobs:
   daily_eod      18:00 ET Mon-Fri  →  EOD OHLCV + macro + options snapshot
@@ -37,7 +37,7 @@ class IngestionScheduler:
         self.log = structlog.get_logger(self.__class__.__name__)
 
     def start(self) -> None:
-        # Daily EOD — runs after market close
+        # Daily EOD - runs after market close
         self._scheduler.add_job(
             self.run_eod_ingestion,
             CronTrigger.from_crontab(settings.ingest_cron_daily, timezone="America/New_York"),
@@ -134,20 +134,20 @@ class IngestionScheduler:
 
     async def run_historical_backfill(self, years: int = 5) -> None:
         """
-        One-time historical backfill — call manually via the REST endpoint.
+        One-time historical backfill - call manually via the REST endpoint.
         Fetches N years of daily OHLCV and macro data.
         """
         end = date.today()
         start = date(end.year - years, end.month, end.day)
         self.log.info("historical_backfill_start", start=str(start), end=str(end), years=years)
 
-        # Macro first — feature consumer caches macro so subsequent OHLCV flushes have it
+        # Macro first - feature consumer caches macro so subsequent OHLCV flushes have it
         macro_records = await self.macro_fetcher.fetch_all_series(start=start, end=end)
         if macro_records:
             await self.writer.write_macro(macro_records)
             await self.publisher.publish_macro(macro_records)
 
-        # OHLCV — published per-ticker so each message stays well under 1 MB
+        # OHLCV - published per-ticker so each message stays well under 1 MB
         ohlcv_by_ticker = await self.ohlcv_fetcher.fetch_universe(
             settings.tickers, start=start, end=end, interval="1d"
         )
