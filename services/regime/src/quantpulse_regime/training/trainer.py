@@ -1,5 +1,5 @@
 """
-Trainer — orchestrates HMM + Transformer training pipeline.
+Trainer - orchestrates HMM + Transformer training pipeline.
 
 Pseudo-labelling strategy (no ground-truth labels available):
   1. Fit HMM on full feature history → get state sequence
@@ -9,7 +9,7 @@ Pseudo-labelling strategy (no ground-truth labels available):
   4. Evaluate ensemble on held-out validation period
 
 This approach is unsupervised at the HMM level and semi-supervised at
-the Transformer level — we bootstrap labels from the statistical model
+the Transformer level - we bootstrap labels from the statistical model
 and use the neural network to learn a richer, non-Markovian representation.
 """
 from pathlib import Path
