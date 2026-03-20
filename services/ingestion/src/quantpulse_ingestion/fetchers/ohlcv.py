@@ -1,5 +1,5 @@
 """
-OHLCVFetcher — pulls price data from yfinance, normalises to Polars,
+OHLCVFetcher - pulls price data from yfinance, normalises to Polars,
 validates with Pydantic, and returns clean OHLCVRecord lists.
 
 yfinance is synchronous; we run it in a thread pool to keep the
