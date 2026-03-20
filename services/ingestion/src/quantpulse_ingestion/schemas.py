@@ -62,7 +62,7 @@ class OptionsRecord(BaseModel):
 
 
 class IngestionBatch(BaseModel):
-    """Envelope published to Kafka — carries metadata alongside records."""
+    """Envelope published to Kafka - carries metadata alongside records."""
     batch_id: str
     ingested_at: datetime
     source: str
