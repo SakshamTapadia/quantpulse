@@ -1,5 +1,5 @@
 """
-TemporalTransformer — sequence-to-label classifier for regime detection.
+TemporalTransformer - sequence-to-label classifier for regime detection.
 
 Architecture:
   Input:  (batch, seq_len=60, n_features)
@@ -8,10 +8,10 @@ Architecture:
   Output: (batch, 4) logits over [trending, mean_reverting, choppy, high_vol]
 
 Design choices:
-  - Global average pooling (not CLS token) — more stable for financial time series
-  - Pre-norm (LayerNorm before attention) — better gradient flow for short sequences
-  - No causal masking — we're doing offline labelling, not autoregressive prediction
-  - Small model (d_model=64) — avoids overfitting on limited labelled data
+  - Global average pooling (not CLS token) - more stable for financial time series
+  - Pre-norm (LayerNorm before attention) - better gradient flow for short sequences
+  - No causal masking - we're doing offline labelling, not autoregressive prediction
+  - Small model (d_model=64) - avoids overfitting on limited labelled data
 """
 import math
 from pathlib import Path
