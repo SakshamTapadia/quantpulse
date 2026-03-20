@@ -60,7 +60,7 @@ class TestTransformerModel:
     def test_fit_and_predict(self, synthetic_tfm_data: tuple) -> None:
         X, y = synthetic_tfm_data
         model = TransformerRegimeModel(n_features=X.shape[2])
-        # Quick smoke test — just 2 epochs
+        # Quick smoke test - just 2 epochs
         from quantpulse_regime.config import settings
         original_epochs = settings.max_epochs
         settings.max_epochs = 2
