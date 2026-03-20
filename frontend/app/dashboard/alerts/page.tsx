@@ -16,7 +16,7 @@ export default async function AlertsPage() {
       <div>
         <h1 className="text-2xl font-bold text-white">Alerts</h1>
         <p className="text-sm text-slate-500 mt-1">
-          {alerts.length} recent alerts — regime transition events and risk flags
+          {alerts.length} recent alerts - regime transition events and risk flags
         </p>
       </div>
 
