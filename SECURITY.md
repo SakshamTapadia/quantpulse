@@ -15,8 +15,8 @@ This project ships with **development-only** default credentials. **Change all o
 
 Never commit your `.env` file. The `.gitignore` already excludes it.
 
-- **POLYGON_API_KEY** — Keep private, rotate if exposed
-- **FRED_API_KEY** — Keep private, rotate if exposed
+- **POLYGON_API_KEY** - Keep private, rotate if exposed
+- **FRED_API_KEY** - Keep private, rotate if exposed
 
 ## Demo Authentication
 
