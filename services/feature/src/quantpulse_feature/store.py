@@ -1,5 +1,5 @@
 """
-FeatureStore — persists computed feature matrices as partitioned Parquet files.
+FeatureStore - persists computed feature matrices as partitioned Parquet files.
 
 Layout:
   {feature_store_path}/
@@ -11,7 +11,7 @@ Layout:
         ...
 
 This is a simple local store compatible with the Hive partitioning scheme.
-For production scaling, swap the path for an S3/MinIO URI — Polars handles
+For production scaling, swap the path for an S3/MinIO URI - Polars handles
 both transparently with pyarrow.
 """
 import os
@@ -97,7 +97,7 @@ class FeatureStore:
 
     def read_latest(self, tickers: list[str] | None = None, n: int = 1) -> pl.DataFrame:
         """
-        Read the N most recent rows per ticker — used by the regime service
+        Read the N most recent rows per ticker - used by the regime service
         for inference on the latest data.
         """
         df = self.read(tickers=tickers)
