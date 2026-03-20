@@ -1,5 +1,5 @@
 """
-Normalisation — rolling z-score for all numeric feature columns.
+Normalisation - rolling z-score for all numeric feature columns.
 
 Why rolling z-score (not global)?
   Financial data is non-stationary. A z-score computed on a fixed
@@ -15,7 +15,7 @@ Strategy:
 Columns explicitly excluded from z-scoring:
   - time, ticker (identifiers)
   - boolean / flag columns (yc_inverted)
-  - already-normalised columns (rsi_norm, tsi — already scaled)
+  - already-normalised columns (rsi_norm, tsi - already scaled)
   - ratio columns that have natural scale (rv_ratio, put_call_ratio)
 """
 import polars as pl
