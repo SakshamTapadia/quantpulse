@@ -18,7 +18,7 @@ export default async function DashboardPage() {
       getAllRegimes(token),
       getAlerts(token, 20),
     ])
-  } catch { /* API not ready yet — show empty state */ }
+  } catch { /* API not ready yet - show empty state */ }
 
   return (
     <>
