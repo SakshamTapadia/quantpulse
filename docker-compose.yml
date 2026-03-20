@@ -272,6 +272,21 @@ services:
     depends_on:
       - api
 
+  frontend-streamlit:
+    build:
+      context: ./frontend_streamlit
+      dockerfile: Dockerfile
+    container_name: qp-frontend-streamlit
+    restart: unless-stopped
+    networks:
+      - quantpulse-net
+    environment:
+      API_BASE_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+
   # ── Observability ──────────────────────────────────────────────────────────
 
   prometheus:
