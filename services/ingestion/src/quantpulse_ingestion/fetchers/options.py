@@ -1,9 +1,9 @@
 """
-OptionsFetcher — processes raw options chain data from yfinance into
+OptionsFetcher - processes raw options chain data from yfinance into
 structured OptionsRecord objects and computes derived metrics:
 
-  - IV skew proxy  (25-delta put IV – 25-delta call IV, approximated by
-                    OTM put IV – OTM call IV from the chain)
+  - IV skew proxy  (25-delta put IV - 25-delta call IV, approximated by
+                    OTM put IV - OTM call IV from the chain)
   - Put/call ratio  (total OI puts / total OI calls)
   - GEX proxy       (gamma * OI * 100 * spot, summed signed by side)
 
@@ -135,7 +135,7 @@ class OptionsFetcher(BaseFetcher):
             if call_oi > 0:
                 metrics["put_call_ratio"] = round(put_oi / call_oi, 4)
 
-        # ── IV skew proxy (OTM put IV – OTM call IV) ──────────────────────
+        # ── IV skew proxy (OTM put IV - OTM call IV) ──────────────────────
         if "impliedVolatility" in calls_df.columns and "impliedVolatility" in puts_df.columns:
             otm_call_iv = (
                 calls_df
