@@ -1,12 +1,12 @@
-# QuantPulse — Market Regime Intelligence Platform
+# QuantPulse - Market Regime Intelligence Platform
 
 A distributed, production-grade fintech platform that ingests real-time market data,
 computes financial indicators, and classifies market regimes using an HMM + Transformer
-ensemble — built entirely on open-source tools.
+ensemble - built entirely on open-source tools.
 
 ## What it does
 
-Watches 15 major stocks and ETFs every day, uses machine learning to classify what "mode" the market is in — **Trending**, **Mean-Reverting**, **Choppy**, or **High-Volatility** — and alerts you when the market shifts between modes.
+Watches 15 major stocks and ETFs every day, uses machine learning to classify what "mode" the market is in - **Trending**, **Mean-Reverting**, **Choppy**, or **High-Volatility** - and alerts you when the market shifts between modes.
 
 ## Quick Start
 
@@ -41,7 +41,7 @@ open http://localhost:3000
 | Alert         | 8004  | Rule-based alert engine |
 | MLflow        | 5000  | Experiment tracking |
 | Kafka UI      | 9080  | Topic browser |
-| Grafana       | 3001  | Metrics — `admin` / `changeme` |
+| Grafana       | 3001  | Metrics - `admin` / `changeme` |
 | Prometheus    | 9090  | Raw metrics scrape |
 
 ## Architecture
@@ -76,9 +76,9 @@ FastAPI · Next.js 14 · Tailwind CSS · Lightweight Charts · Docker Compose ·
 
 ## Data Sources
 
-- **yfinance** — OHLCV bars, options chains (free, no key needed)
-- **FRED API** — VIX, yield curve, HY spread, fed funds rate (free key)
-- **Polygon.io** — EOD data, delayed quotes (free tier, optional)
+- **yfinance** - OHLCV bars, options chains (free, no key needed)
+- **FRED API** - VIX, yield curve, HY spread, fed funds rate (free key)
+- **Polygon.io** - EOD data, delayed quotes (free tier, optional)
 
 ## Features Computed (41 total)
 
@@ -137,4 +137,4 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for instructions on deploying to a cloud VM w
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).
