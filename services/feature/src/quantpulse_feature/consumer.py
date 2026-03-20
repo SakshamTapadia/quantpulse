@@ -1,5 +1,5 @@
 """
-FeatureConsumer — consumes raw data from Kafka, runs the feature pipeline,
+FeatureConsumer - consumes raw data from Kafka, runs the feature pipeline,
 writes results to the feature store, and publishes to computed-features topic.
 
 Consumption model:
@@ -76,7 +76,7 @@ class FeatureConsumer:
             await self._producer.stop()
 
     async def run(self) -> None:
-        """Main consume loop — batches messages and triggers pipeline every 30s."""
+        """Main consume loop - batches messages and triggers pipeline every 30s."""
         if not self._consumer:
             raise RuntimeError("Consumer not started")
 
