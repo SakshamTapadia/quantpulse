@@ -1,5 +1,5 @@
 """
-KafkaPublisher — wraps aiokafka AIOKafkaProducer.
+KafkaPublisher - wraps aiokafka AIOKafkaProducer.
 
 Each record type has its own topic and partition key strategy:
   - OHLCV   → topic: raw-ohlcv,    key: ticker
