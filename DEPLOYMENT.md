@@ -20,7 +20,7 @@
 | Hetzner Cloud | CX32 (4 vCPU / 8 GB) | ~€9/mo |
 | DigitalOcean | Basic (4 vCPU / 8 GB) | ~$48/mo |
 | AWS | EC2 t3.large (2 vCPU / 8 GB) | ~$60/mo |
-| Any VPS | 4 vCPU / 8 GB / Ubuntu | — |
+| Any VPS | 4 vCPU / 8 GB / Ubuntu | - |
 
 ---
 
@@ -52,7 +52,7 @@ cd quantpulse
 cp .env.example .env
 ```
 
-Edit `.env` — **change every default value**:
+Edit `.env` - **change every default value**:
 
 ```bash
 nano .env
@@ -83,7 +83,7 @@ NEXT_PUBLIC_WS_URL=ws://YOUR_SERVER_IP:8000
 docker compose up --build -d
 ```
 
-First build takes 10–15 minutes (pulling base images + installing Python deps). Subsequent starts are fast.
+First build takes 10-15 minutes (pulling base images + installing Python deps). Subsequent starts are fast.
 
 Check everything is up:
 
@@ -99,9 +99,9 @@ All 14 containers should show `Up` or `Up (healthy)`.
 
 Open `http://YOUR_SERVER_IP:3000/dashboard/training` and run in order:
 
-1. **Historical Backfill (5y)** — fetches 5 years of market data (~3 min)
-2. **Retrain Models** — trains HMM + Transformer (~10–15 min, watch MLflow at `:5000`)
-3. **Run Inference** — classifies all 15 tickers and populates the dashboard
+1. **Historical Backfill (5y)** - fetches 5 years of market data (~3 min)
+2. **Retrain Models** - trains HMM + Transformer (~10-15 min, watch MLflow at `:5000`)
+3. **Run Inference** - classifies all 15 tickers and populates the dashboard
 
 Or trigger via API:
 
@@ -125,7 +125,7 @@ curl -X POST http://YOUR_SERVER_IP:8000/infer -H "Authorization: Bearer $TOKEN"
 | Dashboard | `http://YOUR_SERVER_IP:3000` |
 | API docs | `http://YOUR_SERVER_IP:8000/docs` |
 | MLflow | `http://YOUR_SERVER_IP:5000` |
-| Grafana | `http://YOUR_SERVER_IP:3001` — `admin` / your `GF_SECURITY_ADMIN_PASSWORD` |
+| Grafana | `http://YOUR_SERVER_IP:3001` - `admin` / your `GF_SECURITY_ADMIN_PASSWORD` |
 | Prometheus | `http://YOUR_SERVER_IP:9090` |
 | Kafka UI | `http://YOUR_SERVER_IP:9080` |
 
