@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.env
+.env
+
+# Data & ML artifacts
+*.parquet
+*.arrow
+*.pkl
+*.joblib
+*.pt
+*.pth
+ml/models/
+ml/experiments/
+data/
+services/regime/models/
+services/*/models/*.pt
+services/*/models/*.joblib
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+.next/
+out/
+
+# IDE & tools
+.vscode/
+.idea/
+.DS_Store
+
+# Secrets
+*.pem
+*.key
+secrets/
+
+# Volumes
+infra/postgres/data/
+infra/redis/data/
+infra/mlflow/data/
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Docker volumes (local dev data)
+infra/kafka/data/
+infra/mlflow/artifacts/
+
+# OS
+Thumbs.db

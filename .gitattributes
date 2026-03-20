@@ -1,0 +1,11 @@
+# Normalize line endings to LF on commit
+* text=auto eol=lf
+
+# Binary files — never touch
+*.pt binary
+*.joblib binary
+*.parquet binary
+*.arrow binary
+*.png binary
+*.jpg binary
+*.ico binary
