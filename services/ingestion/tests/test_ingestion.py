@@ -1,6 +1,6 @@
 """
 Tests for the ingestion service.
-Mocks yfinance and FRED calls — no external network required.
+Mocks yfinance and FRED calls - no external network required.
 """
 import asyncio
 from datetime import date, datetime, timezone
@@ -35,7 +35,7 @@ def sample_fred_response() -> dict:
         "observations": [
             {"date": "2024-01-02", "value": "13.45"},
             {"date": "2024-01-03", "value": "13.20"},
-            {"date": "2024-01-04", "value": "."},    # missing — should be dropped
+            {"date": "2024-01-04", "value": "."},    # missing - should be dropped
             {"date": "2024-01-05", "value": "14.00"},
         ]
     }
